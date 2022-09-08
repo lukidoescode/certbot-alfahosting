@@ -10,7 +10,7 @@ pub fn browse_alfahosting_signin(tab: &Arc<Tab>, config: &AlfahostingConfig) {
         .unwrap();
     tab.wait_until_navigated().unwrap();
     let accept_cookie_button = tab
-        .find_element("[data-cookiefirst-button=\"primary\"]")
+        .find_element("#cmpbntyestxt")
         .unwrap();
     accept_cookie_button.click().unwrap();
     std::thread::sleep(std::time::Duration::from_millis(
