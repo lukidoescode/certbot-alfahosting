@@ -30,7 +30,7 @@ pub fn request_cert(
         + "/accounts/acme-staging-v02.api.letsencrypt.org/directory";
     #[cfg(build = "release")]
     let persist_path =
-        String::from(certpath.0.as_str()) + "/accounts/acme-v01.api.letsencrypt.org/directory";
+        String::from(certpath.0.as_str()) + "/accounts/acme-v02.api.letsencrypt.org/directory";
     create_dir_all(persist_path.as_str()).unwrap();
     // Save/load keys and certificates to current dir.
     let persist = FilePersist::new(persist_path.as_str());
