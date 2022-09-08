@@ -51,8 +51,8 @@ pub fn request_cert(
     let ord_new = acc.new_order(primary, &alt)?;
 
     let ord_csr = do_challenges(names, tab, alfahosting_id, ord_new)?;
-    let (pkey_pri, pkey_pub) = create_p384_key();
-    let ord_cert = ord_csr.finalize_pkey(pkey_pri, pkey_pub, 5000)?;
+    let pkey_pri = create_p384_key();
+    let ord_cert = ord_csr.finalize_pkey(pkey_pri, 5000)?;
     let cert = ord_cert.download_and_save_cert()?;
 
     // TODO archive old certs
