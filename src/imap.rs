@@ -31,7 +31,7 @@ pub fn get_code_from_inbox(config: &ImapConfig) -> Result<String, Box<dyn Error>
 
 fn handle_message(message: &imap::types::Fetch) -> Option<String> {
     let envelope = message.envelope().unwrap();
-    if envelope.subject.unwrap() == "=?UTF-8?Q?Alfahosting_-_Anmeldung_von_einem_neuen_Ger=C3=A4t?="
+    if envelope.subject.unwrap() == "=?UTF8?Q?Alfahosting=20-=20Anm?==?UTF8?Q?eldung?= =?UTF8?Q?=20von=20einem=20neuen=20Ger?==?UTF8?Q?=C3=A4t?="
     {
         let body = std::str::from_utf8(message.text().unwrap())
             .unwrap()
