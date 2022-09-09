@@ -83,7 +83,16 @@ pub fn browse_alfahosting_dns(tab: &Arc<Tab>, config: &AlfahostingConfig) {
         2_000 + (rand::random::<u64>() % 3_000),
     ));
     tab.navigate_to(
-        "https://secure.alfahosting.de/kunden/index.php/Kundencenter:Tarife/Details#dns",
+        "https://secure.alfahosting.de/kunden/index.php/Kundencenter:Tarife/Details#settings_index",
+    )
+    .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(
+        2_000 + (rand::random::<u64>() % 3_000),
+    ));
+    let body = tab.find_element("body").unwrap();
+    body.call_js_fn(
+        "function () {document.fire('settings_index:reload', {page:'dns'});return false;}",
+        false,
     )
     .unwrap();
     std::thread::sleep(std::time::Duration::from_millis(
