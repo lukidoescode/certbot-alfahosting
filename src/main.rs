@@ -32,7 +32,7 @@ fn main() {
     if let Some(domains) = config.domains {
         let browser = configure_browser();
         println!("Browser has been configured.");
-        let tab = browser.wait_for_initial_tab().unwrap();
+        let tab = browser.new_tab().unwrap();
         println!("Successfully opened initial tab.");
         browse_alfahosting_signin(&tab, &config.alfahosting);
         if browse_alfahosting_check_login_protection(&tab) {
@@ -100,7 +100,7 @@ fn configure_browser() -> Browser {
     lob.port(Some(8467));
     match Browser::new(lob.build().unwrap()) {
         Ok(browser) => browser,
-        Err(err) => panic!("{}", err.as_fail()),
+        Err(err) => panic!("{}", err.to_string()),
     }
 }
 
