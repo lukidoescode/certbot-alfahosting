@@ -30,7 +30,7 @@ pub fn request_cert(
         + "/accounts/acme-staging-v02.api.letsencrypt.org/directory";
     #[cfg(build = "release")]
     let persist_path =
-        String::from(certpath.0.as_str()) + "/accounts/acme-v01.api.letsencrypt.org/directory";
+        String::from(certpath.0.as_str()) + "/accounts/acme-v02.api.letsencrypt.org/directory";
     create_dir_all(persist_path.as_str()).unwrap();
     // Save/load keys and certificates to current dir.
     let persist = FilePersist::new(persist_path.as_str());
@@ -51,8 +51,8 @@ pub fn request_cert(
     let ord_new = acc.new_order(primary, &alt)?;
 
     let ord_csr = do_challenges(names, tab, alfahosting_id, ord_new)?;
-    let (pkey_pri, pkey_pub) = create_p384_key();
-    let ord_cert = ord_csr.finalize_pkey(pkey_pri, pkey_pub, 5000)?;
+    let pkey_pri = create_p384_key();
+    let ord_cert = ord_csr.finalize_pkey(pkey_pri, 5000)?;
     let cert = ord_cert.download_and_save_cert()?;
 
     // TODO archive old certs

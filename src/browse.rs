@@ -9,8 +9,9 @@ pub fn browse_alfahosting_signin(tab: &Arc<Tab>, config: &AlfahostingConfig) {
     tab.navigate_to("https://alfahosting.de/kunden-login/")
         .unwrap();
     tab.wait_until_navigated().unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(2000));
     let accept_cookie_button = tab
-        .find_element("[data-cookiefirst-button=\"primary\"]")
+        .find_element("#cmpbntyestxt")
         .unwrap();
     accept_cookie_button.click().unwrap();
     std::thread::sleep(std::time::Duration::from_millis(
@@ -22,6 +23,9 @@ pub fn browse_alfahosting_signin(tab: &Arc<Tab>, config: &AlfahostingConfig) {
     let submit_button = tab
         .find_element("#loginForm input[type=\"submit\"]")
         .unwrap();
+    // close possible ad popup
+    tab.press_key("Escape").unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(500));
     tab.press_key("PageDown").unwrap();
     std::thread::sleep(std::time::Duration::from_millis(500));
     form_login.scroll_into_view().unwrap();
@@ -83,7 +87,17 @@ pub fn browse_alfahosting_dns(tab: &Arc<Tab>, config: &AlfahostingConfig) {
         2_000 + (rand::random::<u64>() % 3_000),
     ));
     tab.navigate_to(
-        "https://secure.alfahosting.de/kunden/index.php/Kundencenter:Tarife/Details#dns",
+        "https://secure.alfahosting.de/kunden/index.php/Kundencenter:Tarife/Details#settings_index",
+    )
+    .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(
+        2_000 + (rand::random::<u64>() % 3_000),
+    ));
+    let body = tab.find_element("body").unwrap();
+    body.call_js_fn(
+        "function () {document.fire('settings_index:reload', {page:'dns'});return false;}",
+        vec![],
+        false,
     )
     .unwrap();
     std::thread::sleep(std::time::Duration::from_millis(
@@ -110,6 +124,7 @@ pub fn browse_alfahosting_domain_create_acme(
             id
         )
         .as_str(),
+        vec![],
         false,
     )
     .unwrap();
@@ -126,6 +141,7 @@ pub fn browse_alfahosting_domain_create_acme(
     ));
     body.call_js_fn(
         "function () {document.fire('dns:exec_zonelist_add');return false;}",
+        vec![],
         false,
     )
     .unwrap();
@@ -137,20 +153,15 @@ pub fn browse_alfahosting_domain_create_acme(
 pub fn browse_alfahosting_domain_delete_last_dns_entry(tab: &Arc<Tab>, id: String) {
     dns_open_domain_and_scroll_into_view(tab, &id);
     overwrite_window_popups(tab);
-    let last_entry_id = tab
+    let entries = tab
         .find_elements(format!("#dns_entries_{} .dns_entry", id).as_str())
-        .unwrap()
+        .unwrap();
+    let last_entry = entries
         .iter()
-        .fold(String::new(), |current, elem| {
-            if let Some(attributes) = elem.get_attributes().unwrap() {
-                if let Some(new_id) = attributes.get("id") {
-                    return new_id.clone();
-                }
-            }
-            current
-        });
-    let button_delete = tab
-        .find_element(format!("#{} .dns_entry_action", last_entry_id).as_str())
+        .last()
+        .unwrap();
+    let button_delete = last_entry
+        .find_element(".dns_entry_action")
         .unwrap();
     button_delete.click().unwrap();
     dns_save(tab, &id);
@@ -184,11 +195,13 @@ fn overwrite_window_popups(tab: &Arc<Tab>) {
     let body = tab.find_element("body").unwrap();
     body.call_js_fn(
         "function () {window.confirm = function myConfirm() {return true;}}",
+        vec![],
         false,
     )
     .unwrap();
     body.call_js_fn(
         "function () {window.alert = function myAlert() {return true;}}",
+        vec![],
         false,
     )
     .unwrap();
@@ -205,6 +218,7 @@ fn dns_save(tab: &Arc<Tab>, id: &str) {
             id
         )
         .as_str(),
+        vec![],
         false,
     )
     .unwrap();
