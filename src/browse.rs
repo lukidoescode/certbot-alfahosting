@@ -9,6 +9,7 @@ pub fn browse_alfahosting_signin(tab: &Arc<Tab>, config: &AlfahostingConfig) {
     tab.navigate_to("https://alfahosting.de/kunden-login/")
         .unwrap();
     tab.wait_until_navigated().unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(2000));
     let accept_cookie_button = tab
         .find_element("#cmpbntyestxt")
         .unwrap();
@@ -22,6 +23,9 @@ pub fn browse_alfahosting_signin(tab: &Arc<Tab>, config: &AlfahostingConfig) {
     let submit_button = tab
         .find_element("#loginForm input[type=\"submit\"]")
         .unwrap();
+    // close possible ad popup
+    tab.press_key("Escape").unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(500));
     tab.press_key("PageDown").unwrap();
     std::thread::sleep(std::time::Duration::from_millis(500));
     form_login.scroll_into_view().unwrap();
